@@ -1,0 +1,52 @@
+apply plugin: "maven-publish"
+
+import java.time.ZonedDateTime
+
+def gitRevision = "git rev-parse HEAD".execute().text.trim()
+def gitBranch = "git rev-parse --abbrev-ref HEAD".execute().text.trim()
+def javaVersion = System.getProperties().getProperty("java.version").trim()
+def buildDate = (ZonedDateTime.now()).toString()
+
+jar {
+    archiveBaseName = project.name
+    manifest {
+        attributes("Git-Revision": gitRevision,
+                "Git-Branch": gitBranch,
+                "Build-Date": buildDate,
+                "X-Compile-Source-JDK": javaVersion,
+                "X-Compile-Target-JDK": javaVersion)
+    }
+    exclude(['com/miaowei/ApiApplication**','**/application*.yaml'])
+}
+
+tasks.register('sourcesJar', Jar) {
+    from sourceSets.main.kotlin
+    archiveClassifier = "sources"
+    exclude(['**/application*.yaml', 'com/miaowei/ApiApplication.kt'])
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = rootProject.group
+            artifactId = project.name
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            allowInsecureProtocol = true
+            url = version.endsWith("SNAPSHOT") ? "$mavenSnapshotsUrl" : "$mavenReleaseUrl"
+            credentials {
+                username = "$mavenUsername"
+                password = "$mavenPassword"
+            }
+        }
+    }
+}

@@ -1,0 +1,102 @@
+apply from: 'gradle/buildtools/ColoredOutput.gradle'
+
+def ImageName = "miaowei/$rootProject.name"
+def ContainerName = "miaowei-$rootProject.name"
+
+bootJar {
+    archiveFileName = "app.${archiveExtension.get()}"
+}
+
+// spring boot plugin 提供的构建镜像方式，需要github上拉去一个基础linux镜像资源，过于缓慢，不建议使用
+tasks.named("bootBuildImage") {
+    imageName = ImageName
+    environment["BPE_APPEND_JAVA_TOOL_OPTIONS"] = "-XX:+HeapDumpOnOutOfMemoryError"
+}
+
+
+tasks.register('buildDockerImage') {
+    printInfo "buildDockerImage - *** 开始构建镜像 ***"
+
+    printInfo "buildDockerImage - 删除正在运行的容器： $ContainerName"
+    exec {
+        ignoreExitValue true
+        executable "sh"
+        args "-c", "docker rm -f $ContainerName"
+    }
+    printInfo "buildDockerImage - 删除镜像: $ImageName"
+    exec {
+        ignoreExitValue true
+        executable "sh"
+        args "-c", "docker rmi -f $ImageName"
+    }
+    dependsOn bootJar
+    doFirst {
+
+        printSuccess "buildDockerImage -  app.${bootJar.archiveExtension.get()} 打包成功！ 输出目录:$rootProject.buildDir/libs/app.${bootJar.archiveExtension.get()}"
+
+        def execResult = exec {
+            ignoreExitValue true
+            executable "sh"
+            args "-c", "docker build -t $ImageName ."
+        }
+
+        if (execResult.exitValue != 0) {
+            printError "buildDockerImage -  构建镜像:$ImageName 构建失败!"
+            return
+        }
+
+        if (checkImageIsExist(ImageName)) {
+            printSuccess "buildDockerImage -  构建镜像: $ImageName 构建完成"
+        } else {
+            printError "buildDockerImage -  构建镜像: $ImageName 构建失败!"
+        }
+    }
+}
+
+tasks.register('runDocker') {
+    printInfo "runDocker - ***  开始运行$rootProject.name ***"
+    dependsOn buildDockerImage
+
+    doLast {
+
+        def execResult = exec {
+            ignoreExitValue true
+            executable "sh"
+            args "-c", "docker run -p 8080:8080 -d --name=$ContainerName $ImageName"
+        }
+
+        if (execResult.exitValue == 0) {
+            printSuccess "runDocker - docker应用 $ImageName 启动完成 "
+        } else {
+            printError "runDocker -  docker应用:$ImageName 启动失败!"
+        }
+    }
+}
+
+
+def checkImageIsExist(String imageName) {
+    def execResult = exec {
+        ignoreExitValue true
+        executable "sh"
+        args "-c", "docker images | grep '$imageName'"
+    }
+
+    return execResult.exitValue == 0
+}
+
+//docker logs $(docker ps -aqf name=keycloak$)
+
+// docker network create kind-net
+// docker network connect kind-net registry
+// docker network connect kind-net kind-control-plane
+// docker build -t registry:5000/miaowei/gas-api:1.0 .
+// docker push registry:5000/miaowei/gas-api:1.0
+// kubectl apply -f ./k8s/deployment.yaml
+// kubectl port-forward -n miaowei-gas services/miaowei-gas-api 8080:8080
+
+
+// docker build -t microismile.cn:5000/miaowei/gas-api:1.0 .
+//docker push  microismile.cn:5000/miaowei/gas-api:1.0
+
+
+// docker network connect --alias microismile.cn kind-net nginx

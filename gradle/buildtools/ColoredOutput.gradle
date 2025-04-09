@@ -1,0 +1,29 @@
+def ANSI_BOLD_WHITE = "\u001B[0;1m"
+def ANSI_RESET = "\u001B[0m"
+def ANSI_BLACK = "\u001B[30m"
+def ANSI_RED = "\u001B[31m"
+def ANSI_GREEN = "\u001B[32m"
+def ANSI_YELLOW = "\u001B[33m"
+def ANSI_BLUE = "\u001B[34m"
+def ANSI_PURPLE = "\u001B[35m"
+def ANSI_CYAN = "\u001B[36m"
+def ANSI_WHITE = "\u001B[37m"
+def CHECK_MARK = "\u2713"
+def NEUTRAL_FACE = "\u0CA0_\u0CA0"
+def X_MARK = "\u274C"
+
+ext.printSuccess = { message ->
+    println "$ANSI_GREEN ** $message $ANSI_RESET"
+}
+
+ext.printError = { message ->
+    println "$ANSI_RED ** $message $ANSI_RESET"
+}
+
+ext.printWarning = { message ->
+    println "$ANSI_YELLOW ** $message $ANSI_RESET"
+}
+
+ext.printInfo = { message ->
+    println "$ANSI_BLUE ** $message $ANSI_RESET"
+}
