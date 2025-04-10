@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: deep-learning
+  profiles:
+    active: local
+
+app:
+  version: 1.0.0
+  template:
+    quantity-limit: 10
+  isSaveAllImages: true
+  aiThreadPoolSize: 1

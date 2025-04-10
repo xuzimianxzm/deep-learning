@@ -19,10 +19,6 @@ const val PrefixThreadName = "AI-Executor-"
 
 const val AIThreadPoolExecutorName = "AIThreadPoolExecutor"
 
-const val CommonThreadPoolExecutorName = "CommonThreadPoolExecutor"
-
-const val SymbolDetectionThreadPoolExecutor = "SymbolDetectionThreadPoolExecutor"
-
 @Lazy
 @Configuration
 class PaddleOCRConfig {
@@ -62,37 +58,6 @@ class PaddleOCRConfig {
         threadPoolExecutor.isDaemon = false
         threadPoolExecutor.keepAliveSeconds = 300 // 线程空闲时间
         threadPoolExecutor.setThreadNamePrefix(PrefixThreadName) // 线程名字前缀
-        return threadPoolExecutor
-    }
-
-    /**
-     * 因为上面定义了AIThreadPoolExecutor会覆盖common包的bootstrap中的配置的ThreadPoolTaskExecutor
-     * 这里采用代码方式覆盖回来。
-     */
-    @Bean(name = [CommonThreadPoolExecutorName])
-    fun commonThreadPoolExecutor(): ThreadPoolTaskExecutor {
-        val threadPoolExecutor = ThreadPoolTaskExecutor()
-        threadPoolExecutor.corePoolSize = 8
-        threadPoolExecutor.maxPoolSize = 16
-        threadPoolExecutor.queueCapacity = 1000// 队列程度
-        threadPoolExecutor.setAllowCoreThreadTimeOut(true)
-        threadPoolExecutor.keepAliveSeconds = 10 * 60 // 线程空闲时间
-        threadPoolExecutor.setThreadNamePrefix(" my-executor-") // 线程名字前缀
-        return threadPoolExecutor
-    }
-
-    /**
-     * 图像符号识别线程池
-     */
-    @Bean(name = [SymbolDetectionThreadPoolExecutor])
-    fun symbolDetectionThreadPoolExecutor(): ThreadPoolTaskExecutor {
-        val threadPoolExecutor = ThreadPoolTaskExecutor()
-        threadPoolExecutor.corePoolSize = 2
-        threadPoolExecutor.maxPoolSize = 2
-        threadPoolExecutor.queueCapacity = 1000// 队列程度
-        threadPoolExecutor.setAllowCoreThreadTimeOut(true)
-        threadPoolExecutor.keepAliveSeconds = 10 * 60 // 线程空闲时间
-        threadPoolExecutor.setThreadNamePrefix("symbol-detection-executor-") // 线程名字前缀
         return threadPoolExecutor
     }
 
