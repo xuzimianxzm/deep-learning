@@ -8,7 +8,12 @@ import ai.djl.modality.cv.output.DetectedObjects
 import ai.djl.modality.cv.output.Rectangle
 import ai.djl.modality.cv.util.NDImageUtils
 import ai.djl.ndarray.NDManager
+import com.xuzimian.dl.config.AIThreadPoolExecutorName
 import jakarta.annotation.Resource
+import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.scheduling.annotation.Async
+import org.springframework.stereotype.Service
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.InputStream
@@ -16,10 +21,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.Instant
 import java.util.concurrent.CompletableFuture
-import mu.KotlinLogging
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.scheduling.annotation.Async
-import org.springframework.stereotype.Service
 
 @Service
 class PaddleOCRService {
@@ -30,7 +31,7 @@ class PaddleOCRService {
     private lateinit var ocrDetector: OCRDetector
 
     @Value("#{environment.getProperty('debug') != null && environment.getProperty('debug') != 'false'}")
-    private val debug: Boolean = false;
+    private val debug: Boolean = false
 
     @Async(AIThreadPoolExecutorName)
     fun getImageTextsAsync(byteArray: ByteArray): CompletableFuture<List<String>> {

@@ -5,14 +5,15 @@ import ai.djl.modality.Classifications
 import ai.djl.modality.cv.Image
 import ai.djl.modality.cv.output.DetectedObjects
 import ai.djl.repository.zoo.ZooModel
+import com.xuzimian.dl.config.PrefixThreadName
 import com.xuzimian.dl.exception.AppException
-import com.xuzimian.dl.ocr.LabelDetectionErrorCode.*
+import com.xuzimian.dl.ocr.LabelDetectionErrorCode.OCR_DETECTOR_NOT_EXIST_IN_CURRENT_THREAD
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.Resource
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 
 /**
  * 解决并发情况下，图像识别算法内存消耗过高导致程序崩溃的问题。采用线程池固定线程帮顶固定的图像识别器方式来服用图像识别和多线程，
