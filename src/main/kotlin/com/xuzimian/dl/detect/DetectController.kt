@@ -1,5 +1,6 @@
 package com.xuzimian.dl.detect
 
+import com.xuzimian.dl.ic.ImageClassificationService
 import com.xuzimian.dl.ocr.saveAsPNG
 import jakarta.annotation.Resource
 import org.springframework.http.HttpHeaders
@@ -19,6 +20,9 @@ class DetectController {
 
     @Resource
     private lateinit var detectService: DetectService
+
+    @Resource
+    private lateinit var imageClassificationService: ImageClassificationService
 
     @PostMapping("/detectText", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun detectText(@RequestParam("image") file: MultipartFile): List<String> {
@@ -40,5 +44,11 @@ class DetectController {
             .headers(headers)
             .contentLength(byteArray.size.toLong())
             .body(byteArray)
+    }
+
+
+    @PostMapping("/imageClassify", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun imageClassify(@RequestParam("image") file: MultipartFile): String {
+        return imageClassificationService.imageClassify(file.inputStream)
     }
 }

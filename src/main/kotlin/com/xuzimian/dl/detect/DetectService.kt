@@ -1,6 +1,5 @@
 package com.xuzimian.dl.detect
 
-import ai.djl.modality.cv.ImageFactory
 import com.xuzimian.dl.ocr.PaddleOCRService
 import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
@@ -18,6 +17,6 @@ class DetectService {
     }
 
     fun markTextOnImage(file: MultipartFile): BufferedImage {
-        return paddleOCRService.markTextOnImageAsync(ImageFactory.getInstance().fromInputStream(file.inputStream)).get()
+        return paddleOCRService.markTextOnImageAsync(file.inputStream).get()
     }
 }

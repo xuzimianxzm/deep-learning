@@ -40,9 +40,13 @@ class PaddleOCRService {
     }
 
     @Async(AIThreadPoolExecutorName)
-    fun markTextOnImageAsync(img: Image): CompletableFuture<BufferedImage> {
+    fun markTextOnImageAsync(inputStream: InputStream): CompletableFuture<BufferedImage> {
         logger.info { "识别并标记图像: ${Thread.currentThread().name} " }
-        return CompletableFuture.completedFuture(markTextOnImage(img))
+        return CompletableFuture.completedFuture(
+            markTextOnImage(
+                ImageFactory.getInstance().fromInputStream(inputStream)
+            )
+        )
     }
 
     private fun getImageTexts(byteArray: ByteArray): List<String> {
