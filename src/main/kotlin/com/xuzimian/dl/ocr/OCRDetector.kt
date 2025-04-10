@@ -8,8 +8,7 @@ import ai.djl.repository.zoo.ZooModel
 import com.xuzimian.dl.config.PrefixThreadName
 import com.xuzimian.dl.exception.AppException
 import com.xuzimian.dl.ocr.LabelDetectionErrorCode.OCR_DETECTOR_NOT_EXIST_IN_CURRENT_THREAD
-import jakarta.annotation.PostConstruct
-import jakarta.annotation.Resource
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.concurrent.ConcurrentHashMap
@@ -26,17 +25,25 @@ import java.util.concurrent.ConcurrentMap
 @Component
 class OCRDetector {
 
+    private val logger = KotlinLogging.logger {}
+
     @Value("\${app.aiThreadPoolSize:#{5}}")
     private var aiThreadPoolSize = 5
 
-    @Resource
-    private lateinit var recognizerModel: ZooModel<Image, String>
+    @Value("\${app.model.rootDirectory:#{null}}")
+    private var modelRootDirectory: String? = null
 
-    @Resource
-    private lateinit var textAreaDetectorModel: ZooModel<Image, DetectedObjects>
+    private val recognizerModel: ZooModel<Image, String> by lazy {
+        PaddleOCRFactory.createTextRecognizerModel(modelRootDirectory)
+    }
 
-    @Resource
-    private lateinit var rotateClassifierModel: ZooModel<Image, Classifications>
+    private val textAreaDetectorModel: ZooModel<Image, DetectedObjects> by lazy {
+        PaddleOCRFactory.createTextAreaDetectorModel(modelRootDirectory)
+    }
+
+    private val rotateClassifierModel: ZooModel<Image, Classifications> by lazy {
+        PaddleOCRFactory.createTextRotateClassifierModel(modelRootDirectory)
+    }
 
     private val recognizers: ConcurrentMap<String, Predictor<Image, String>> = ConcurrentHashMap()
 
@@ -44,8 +51,8 @@ class OCRDetector {
 
     private val rotateClassifiers: ConcurrentMap<String, Predictor<Image, Classifications>> = ConcurrentHashMap()
 
-    @PostConstruct
-    fun init() {
+    private val initialization: Unit by lazy {
+        logger.info { "开始OCR 模型初始化..." }
         for (index in 1..aiThreadPoolSize) {
             recognizers["$PrefixThreadName$index"] = recognizerModel.newPredictor()
             textAreaDetectors["$PrefixThreadName$index"] = textAreaDetectorModel.newPredictor()
@@ -54,6 +61,7 @@ class OCRDetector {
     }
 
     fun predictTextArea(img: Image): DetectedObjects {
+        initialization
         val textAreaDetector = textAreaDetectors[Thread.currentThread().name] ?: throw AppException.getAppException(
             OCR_DETECTOR_NOT_EXIST_IN_CURRENT_THREAD
         )
@@ -61,6 +69,7 @@ class OCRDetector {
     }
 
     fun predictRotate(img: Image): Classifications {
+        initialization
         val rotateClassifier = rotateClassifiers[Thread.currentThread().name] ?: throw AppException.getAppException(
             OCR_DETECTOR_NOT_EXIST_IN_CURRENT_THREAD
         )
@@ -68,6 +77,7 @@ class OCRDetector {
     }
 
     fun predictRecognize(img: Image): String {
+        initialization
         val recognizer = recognizers[Thread.currentThread().name] ?: throw AppException.getAppException(
             OCR_DETECTOR_NOT_EXIST_IN_CURRENT_THREAD
         )
