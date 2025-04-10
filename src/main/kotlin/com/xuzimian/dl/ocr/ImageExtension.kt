@@ -19,7 +19,6 @@ fun BufferedImage.saveAsPNG(outputStream: OutputStream) {
     ImageIO.write(this, "png", outputStream)
 }
 
-
 fun Image.getDrawBoundingBoxesBufferedImage(ocrDetectedDataList: List<OCRDetectedData>): BufferedImage {
     val image = convertIdNeeded(this.wrappedImage as BufferedImage)
 

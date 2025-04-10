@@ -38,11 +38,17 @@ class PaddleOCRService {
         return CompletableFuture.completedFuture(getImageTexts(byteArray))
     }
 
-    fun getImageTexts(byteArray: ByteArray): List<String> {
+    @Async(AIThreadPoolExecutorName)
+    fun markTextOnImageAsync(img: Image): CompletableFuture<BufferedImage> {
+        logger.info { "识别并标记图像: ${Thread.currentThread().name} " }
+        return CompletableFuture.completedFuture(markTextOnImage(img))
+    }
+
+    private fun getImageTexts(byteArray: ByteArray): List<String> {
         return getImageTexts(ByteArrayInputStream(byteArray))
     }
 
-    fun getImageTexts(inputStream: InputStream): List<String> {
+    private fun getImageTexts(inputStream: InputStream): List<String> {
         var img = ImageFactory.getInstance().fromInputStream(inputStream)
 
         val maxSize = 1560
@@ -55,8 +61,10 @@ class PaddleOCRService {
             else
                 img.height.toFloat() / img.width.toFloat()
 
-            img = img.resize(if (isUpright) maxSize else (maxSize / scale).toInt(),
-                if (!isUpright) maxSize else (maxSize / scale).toInt() , false)
+            img = img.resize(
+                if (isUpright) maxSize else (maxSize / scale).toInt(),
+                if (!isUpright) maxSize else (maxSize / scale).toInt(), false
+            )
         }
 
         return getImageTexts(img)
@@ -65,7 +73,7 @@ class PaddleOCRService {
     /**
      * 获取识别的文字集合
      */
-    fun getImageTexts(img: Image): List<String> {
+    private fun getImageTexts(img: Image): List<String> {
         val boxes: List<DetectedObjects.DetectedObject> = ocrDetector.predictTextArea(img).items()
         val ocrDetectedData = getImageTextAndBox(img, boxes)
         return ocrDetectedData.map { it.text }
@@ -75,7 +83,7 @@ class PaddleOCRService {
      *
      * 返回原图像，在原图上文字区域框选出来，并画上对应识别文字结果。
      */
-    fun markTextOnImage(img: Image): BufferedImage {
+    private fun markTextOnImage(img: Image): BufferedImage {
         val boxes: List<DetectedObjects.DetectedObject> = ocrDetector.predictTextArea(img).items()
         val ocrDetectedData = getImageTextAndBox(img, boxes)
         return img.getDrawBoundingBoxesBufferedImage(ocrDetectedData)
@@ -116,7 +124,8 @@ class PaddleOCRService {
         if (debug) {
             val newImage = img.duplicate()
             newImage.drawBoundingBoxes(
-                DetectedObjects(oCRDetectedDataList.map { it.text },
+                DetectedObjects(
+                    oCRDetectedDataList.map { it.text },
                     oCRDetectedDataList.map { -1.0 },
                     oCRDetectedDataList.map { it.rect })
             )

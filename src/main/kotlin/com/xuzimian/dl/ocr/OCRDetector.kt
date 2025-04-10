@@ -45,7 +45,7 @@ class OCRDetector {
 
     @PostConstruct
     fun init() {
-        for (index in 1 .. aiThreadPoolSize) {
+        for (index in 1..aiThreadPoolSize) {
             recognizers["$PrefixThreadName$index"] = recognizerModel.newPredictor()
             textAreaDetectors["$PrefixThreadName$index"] = textAreaDetectorModel.newPredictor()
             rotateClassifiers["$PrefixThreadName$index"] = rotateClassifierModel.newPredictor()
