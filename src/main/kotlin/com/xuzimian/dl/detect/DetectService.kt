@@ -1,6 +1,5 @@
 package com.xuzimian.dl.detect
 
-import ai.djl.modality.cv.Image
 import ai.djl.modality.cv.ImageFactory
 import com.xuzimian.dl.ocr.PaddleOCRService
 import jakarta.annotation.Resource

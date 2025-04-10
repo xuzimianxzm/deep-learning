@@ -240,6 +240,9 @@ class PaddleOCRService {
     }
 
 
+    private val heightScale = 1.7
+    private val widthScale = 1.2
+
     /**
      * 扩展文字框的大小,将框的高度和宽度扩展至一定比例。
      */
@@ -250,10 +253,10 @@ class PaddleOCRService {
         val centerY = yMin + heightCopy / 2
         if (widthCopy > heightCopy) {
             widthCopy += heightCopy * 2.0
-            heightCopy *= 3.0
+            heightCopy *= heightScale
         } else {
             heightCopy += widthCopy * 2.0
-            widthCopy *= 3.0
+            widthCopy *= widthScale
         }
         val newX: Double = if (centerX - widthCopy / 2 < 0) 0.0 else centerX - widthCopy / 2
         val newY: Double = if (centerY - heightCopy / 2 < 0) 0.0 else centerY - heightCopy / 2
