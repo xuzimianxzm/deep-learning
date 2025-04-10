@@ -31,8 +31,8 @@ object PaddleOCRFactory {
         device: Device? = null
     ): ZooModel<Image, DetectedObjects> {
         val modelPath = if (modelRootDirectory != null)
-            "${modelRootDirectory + File.separator}ch_PP-OCRv4_det_infer.tar"
-        else classLoader.getResource("ch_PP-OCRv4_det_infer.tar")!!.path.removePrefix("/")
+            "${modelRootDirectory}/ocr/ch_PP-OCRv4_det_infer.tar"
+        else classLoader.getResource("./ocr/ch_PP-OCRv4_det_infer.tar")!!.path.removePrefix("/")
 
         logger.info { "从地址: $modelPath 加载模型ch_PP-OCRv4_det_infer.tar" }
 
@@ -58,8 +58,8 @@ object PaddleOCRFactory {
         device: Device? = null
     ): ZooModel<Image, Classifications> {
         val modelPath = if (modelRootDirectory != null)
-            "${modelRootDirectory + File.separator}cls.zip"
-        else classLoader.getResource("cls.zip")!!.path.removePrefix("/")
+            "${modelRootDirectory}/ocr/cls.zip"
+        else classLoader.getResource("./ocr/cls.zip")!!.path.removePrefix("/")
 
         logger.info { "从地址: $modelPath 加载模型cls.zip" }
 
@@ -83,8 +83,8 @@ object PaddleOCRFactory {
      */
     fun createTextRecognizerModel(modelRootDirectory: String? = null, device: Device? = null): ZooModel<Image, String> {
         val modelPath = if (modelRootDirectory != null)
-            "${modelRootDirectory + File.separator}ch_PP-OCRv4_rec_infer.zip"
-        else classLoader.getResource("ch_PP-OCRv4_rec_infer.zip")!!.path.removePrefix("/")
+            "${modelRootDirectory}/ocr/ch_PP-OCRv4_rec_infer.zip"
+        else classLoader.getResource("./ocr/ch_PP-OCRv4_rec_infer.zip")!!.path.removePrefix("/")
 
         logger.info { "从地址: $modelPath 加载模型ch_PP-OCRv4_rec_infer.zip" }
 

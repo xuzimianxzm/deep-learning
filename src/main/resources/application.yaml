@@ -10,3 +10,5 @@ app:
     quantity-limit: 10
   isSaveAllImages: true
   aiThreadPoolSize: 1
+  model:
+    rootDirectory: ./.models
