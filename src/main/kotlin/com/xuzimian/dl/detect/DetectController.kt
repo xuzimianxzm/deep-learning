@@ -57,18 +57,14 @@ class DetectController {
 
     @PostMapping("/objectDetect", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun objectDetect(@RequestParam("image") file: MultipartFile): ResponseEntity<ByteArray> {
-        var image = objectDetectionService.objectDetect(file.inputStream).get()
-
-        val outputStream = ByteArrayOutputStream()
-        image.saveAsPNG(outputStream)
-        var byteArray = outputStream.toByteArray()
+        var imageByte = objectDetectionService.objectDetect(file.inputStream).get()
 
         val headers = HttpHeaders()
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=detectImage.png")
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=detectImage.jpg")
         headers.contentType = MediaType.IMAGE_PNG
         return ResponseEntity.ok()
             .headers(headers)
-            .contentLength(byteArray.size.toLong())
-            .body(byteArray)
+            .contentLength(imageByte.size.toLong())
+            .body(imageByte)
     }
 }

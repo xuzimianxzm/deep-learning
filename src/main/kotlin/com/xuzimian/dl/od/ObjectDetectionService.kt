@@ -8,7 +8,7 @@ import ai.djl.repository.zoo.Criteria
 import ai.djl.training.util.ProgressBar
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 
@@ -27,7 +27,7 @@ class ObjectDetectionService {
         model.newPredictor()
     }
 
-    fun objectDetect(inputStream: InputStream): CompletableFuture<BufferedImage> {
+    fun objectDetect(inputStream: InputStream): CompletableFuture<ByteArray> {
         logger.info { "识别并标记图像: ${Thread.currentThread().name} " }
         return CompletableFuture.completedFuture(
             objectDetectOnImage(
@@ -36,11 +36,14 @@ class ObjectDetectionService {
         )
     }
 
-    private fun objectDetectOnImage(img: Image): BufferedImage {
+    private fun objectDetectOnImage(img: Image): ByteArray {
         var detections = predictor.predict(img)
         logger.info { "识别目标结果: $detections" }
 
         img.drawBoundingBoxes(detections)
-        return img.wrappedImage as BufferedImage
+
+        val outputStream = ByteArrayOutputStream()
+        img.save(outputStream, "jpg")
+        return outputStream.toByteArray()
     }
 }
