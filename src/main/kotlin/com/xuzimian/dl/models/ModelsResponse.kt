@@ -6,6 +6,6 @@ class ModelsResponse {
 
 class DeepLearningModel {
     lateinit var type: String
-    lateinit var fullName: String
+    lateinit var name: String
     lateinit var properties: Map<String, String>
 }

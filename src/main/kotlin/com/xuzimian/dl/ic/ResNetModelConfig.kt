@@ -75,7 +75,6 @@ class ResNetModelConfig {
             )
         }
 
-
         val classLabels = "${path}/synset.txt"
         if (!Files.exists(Path(classLabels))) {
             logger.info { "开始下载分类标签文件..." }
