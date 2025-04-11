@@ -53,6 +53,7 @@ class ResNetModelConfig {
             .build()
 
         return Criteria.builder()
+            .optEngine("PyTorch")
             .setTypes(Image::class.java, Classifications::class.java)
             .optModelPath(Path(path))
             .optOption("mapLocation", "true")
@@ -75,12 +76,12 @@ class ResNetModelConfig {
             )
         }
 
-        val classLabels = "${path}/synset.txt"
-        if (!Files.exists(Path(classLabels))) {
+        val classLabelsPath = "${path}/synset.txt"
+        if (!Files.exists(Path(classLabelsPath))) {
             logger.info { "开始下载分类标签文件..." }
             DownloadUtils.download(
                 "https://djl-ai.s3.amazonaws.com/mlrepo/model/cv/image_classification/ai/djl/pytorch/synset.txt",
-                classLabels,
+                classLabelsPath,
                 ProgressBar()
             )
         }
