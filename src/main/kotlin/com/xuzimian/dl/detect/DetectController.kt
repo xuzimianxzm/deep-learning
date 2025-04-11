@@ -2,6 +2,7 @@ package com.xuzimian.dl.detect
 
 import com.xuzimian.dl.ic.ImageClassificationService
 import com.xuzimian.dl.ocr.saveAsPNG
+import com.xuzimian.dl.od.ObjectDetectionService
 import jakarta.annotation.Resource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -23,6 +24,9 @@ class DetectController {
 
     @Resource
     private lateinit var imageClassificationService: ImageClassificationService
+
+    @Resource
+    private lateinit var objectDetectionService: ObjectDetectionService
 
     @PostMapping("/detectText", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun detectText(@RequestParam("image") file: MultipartFile): List<String> {
@@ -46,9 +50,25 @@ class DetectController {
             .body(byteArray)
     }
 
-
     @PostMapping("/imageClassify", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun imageClassify(@RequestParam("image") file: MultipartFile): String {
         return imageClassificationService.imageClassify(file.inputStream)
+    }
+
+    @PostMapping("/objectDetect", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun objectDetect(@RequestParam("image") file: MultipartFile): ResponseEntity<ByteArray> {
+        var image = objectDetectionService.objectDetect(file.inputStream).get()
+
+        val outputStream = ByteArrayOutputStream()
+        image.saveAsPNG(outputStream)
+        var byteArray = outputStream.toByteArray()
+
+        val headers = HttpHeaders()
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=detectImage.png")
+        headers.contentType = MediaType.IMAGE_PNG
+        return ResponseEntity.ok()
+            .headers(headers)
+            .contentLength(byteArray.size.toLong())
+            .body(byteArray)
     }
 }
