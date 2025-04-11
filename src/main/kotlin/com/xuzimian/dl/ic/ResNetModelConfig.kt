@@ -48,6 +48,8 @@ class ResNetModelConfig {
                 )
             )
             .optApplySoftmax(true)
+            // synset.txt is default name,No need to set
+            .optSynsetArtifactName("synset.txt")
             .build()
 
         return Criteria.builder()
