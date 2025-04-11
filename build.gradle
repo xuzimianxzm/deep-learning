@@ -35,9 +35,22 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'io.github.microutils:kotlin-logging-jvm:3.0.5'
 
-    implementation 'ai.djl:model-zoo'
     implementation 'ai.djl.pytorch:pytorch-engine'
+    implementation 'ai.djl:model-zoo'
     implementation 'ai.djl.paddlepaddle:paddlepaddle-model-zoo:0.27.0'
+
+    implementation 'ai.djl.tensorflow:tensorflow-engine'
+    implementation 'ai.djl.tensorflow:tensorflow-model-zoo'
+
+    implementation 'ai.djl.mxnet:mxnet-engine'
+    implementation 'ai.djl.mxnet:mxnet-model-zoo'
+
+    implementation 'ai.djl.onnxruntime:onnxruntime-engine'
+    // 如果要使用 GPU，可以手动排除 com.microsoft.onnxruntime：onnxruntime 并将 com.microsoft.onnxruntime：onnxruntime_gpu 添加到项目中。
+    // implementation("ai.djl.onnxruntime:onnxruntime-engine") {
+    //    exclude group: "com.microsoft.onnxruntime", module: "onnxruntime"
+    // }
+    // implementation "com.microsoft.onnxruntime:onnxruntime_gpu:1.18.0"
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
