@@ -21,7 +21,7 @@ fun Mat.toBufferedImage(): BufferedImage {
 }
 
 
-fun toBufferedImage(mat: Mat): BufferedImage {
+fun toBufferedImage2(mat: Mat): BufferedImage {
     val type =
         if (mat.channels() != 1) BufferedImage.TYPE_3BYTE_BGR else BufferedImage.TYPE_BYTE_GRAY
 
