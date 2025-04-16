@@ -21,18 +21,18 @@ fun Mat.toBufferedImage(): BufferedImage {
 }
 
 
-fun toBufferedImage2(mat: Mat): BufferedImage {
+fun Mat.toBufferedImage2(): BufferedImage {
     val type =
-        if (mat.channels() != 1) BufferedImage.TYPE_3BYTE_BGR else BufferedImage.TYPE_BYTE_GRAY
+        if (this.channels() != 1) BufferedImage.TYPE_3BYTE_BGR else BufferedImage.TYPE_BYTE_GRAY
 
     if (type == BufferedImage.TYPE_3BYTE_BGR) {
-        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2RGB)
+        Imgproc.cvtColor(this, this, Imgproc.COLOR_BGR2RGB)
     }
 
-    val width = mat.width()
-    val height = mat.height()
-    val data = ByteArray(width * height * mat.elemSize().toInt())
-    mat[0, 0, data]
+    val width = this.width()
+    val height = this.height()
+    val data = ByteArray(width * height * this.elemSize().toInt())
+    this[0, 0, data]
 
     val ret = BufferedImage(width, height, type)
     ret.raster.setDataElements(0, 0, width, height, data)
