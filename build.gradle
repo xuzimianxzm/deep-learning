@@ -36,8 +36,12 @@ dependencies {
     implementation 'io.github.microutils:kotlin-logging-jvm:3.0.5'
 
     implementation 'ai.djl.opencv:opencv'
-    implementation 'ai.djl.pytorch:pytorch-engine'
     implementation 'ai.djl:model-zoo'
+
+    implementation 'ai.djl.pytorch:pytorch-engine'
+    implementation 'ai.djl.pytorch:pytorch-model-zoo'
+
+    implementation 'ai.djl.paddlepaddle:paddlepaddle-engine:0.27.0'
     implementation 'ai.djl.paddlepaddle:paddlepaddle-model-zoo:0.27.0'
 
     implementation 'ai.djl.tensorflow:tensorflow-engine'
